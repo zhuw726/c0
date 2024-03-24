@@ -4,7 +4,7 @@ pipeline{
         // Install the Maven version configured as "M3" and add it to the path.
         maven "M3"
         jdk "JDK17"
-        sonarqube "SONAR"
+        // sonarqube "SONAR"
     }
     stages{
         stage('get code'){
@@ -27,6 +27,11 @@ pipeline{
         stage('unit test'){
             steps{
                 sh 'mvn test'
+            }
+        }
+        stage('sonarqube check'){
+            steps{
+                sh 'mvn checkstyle:checkstyle'
             }
         }
     }
