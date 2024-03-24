@@ -34,5 +34,34 @@ pipeline{
                 sh 'mvn checkstyle:checkstyle'
             }
         }
+
+        stage("build & SonarQube analysis") {
+          environment{
+            scannerHome = tool 'sonar'
+          }
+          steps{
+              withSonarQubeEnv('sonar') {
+                //  sh 'mvn clean package sonar:sonar'
+                sh '''${scannerHome}/bin/sonar-scanner -Dsonar.projectKey=c0 \
+                   -Dsonar.projectName=c0 \
+                   -Dsonar.projectVersion=1.0 \
+                   -Dsonar.sources=src/ \
+                   -Dsonar.java.binaries=target/test-classes/com/visualpathit/account/controllerTest/ \
+                   -Dsonar.junit.reportsPath=target/surefire-reports/ \
+                   -Dsonar.jacoco.reportsPath=target/jacoco.exec \
+                   -Dsonar.java.checkstyle.reportPaths=target/checkstyle-result.xml
+                '''
+              }
+          }
+      }
+
+    //   stage("Quality Gate"){
+    //       timeout(time: 1, unit: 'HOURS') {
+    //           def qg = waitForQualityGate()
+    //           if (qg.status != 'OK') {
+    //               error "Pipeline aborted due to quality gate failure: ${qg.status}"
+    //           }
+    //       }
+    //   }
     }
 }
