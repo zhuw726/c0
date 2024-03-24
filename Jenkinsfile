@@ -34,6 +34,13 @@ pipeline{
                 sh 'mvn checkstyle:checkstyle'
             }
         }
+        stage('sonarqube Analysis'){
+            steps{
+                withSonarQubeEnv('SonarQubeServer') {
+                    sh 'sonar-scanner'
+                }
+            }
+        }
 
         stage("build & SonarQube analysis") {
           environment{
