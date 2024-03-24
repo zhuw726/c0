@@ -4,7 +4,7 @@ pipeline{
         // Install the Maven version configured as "M3" and add it to the path.
         maven "M3"
         jdk "JDK17"
-        sonar "sonar"
+        // sonar "sonar"
     }
     stages{
         stage('get code'){
