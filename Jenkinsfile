@@ -85,4 +85,18 @@ pipeline{
           }
       }
     }
+    post {
+        success {
+            script {
+                // Send Slack notification on build success
+                slackSend channel: 'jenkins-cicd-notifycaiton', color: 'good', message: "Build successful: ${currentBuild.fullDisplayName}"
+            }
+        }
+        failure {
+            script {
+                // Send Slack notification on build failure
+                slackSend channel: 'jenkins-cicd-notifycaiton', color: 'danger', message: "Build failed: ${currentBuild.fullDisplayName}"
+            }
+        }
+    }
 }
