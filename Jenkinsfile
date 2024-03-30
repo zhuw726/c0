@@ -65,5 +65,24 @@ pipeline{
           }
       }
       }
+      stage("uploade to nexus"){
+          steps{
+            nexusArtifactUploader(
+            nexusVersion: 'nexus3',
+            protocol: 'http',
+            nexusUrl: 'nexus.zoowj.click:8081',
+            groupId: 'QA',
+            version: "${env.BUILD_ID}-${env.BUILD_TIMESTAMP}",
+            repository: 'c01-hosted',
+            credentialsId: 'nexus',
+            artifacts: [
+                [artifactId: c0,
+                 classifier: '',
+                 file: 'target/rest-service-complete-0.0.1-SNAPSHOT.jar',
+                 type: 'jar']
+            ]
+            )
+          }
+      }
     }
 }
