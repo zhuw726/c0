@@ -98,7 +98,7 @@ pipeline{
             steps {
                 script {
                     // Define Dockerfile location and image name
-                    def dockerfile = '.Dockerfile'
+                    def dockerfile = 'Dockerfile'
                     def imageName = 'c0-app:tag'
 
                     // Build Docker image
@@ -117,7 +117,7 @@ pipeline{
                 
                 // Tag Docker image
                 script {
-                    docker.image("your/image-name:${DOCKER_IMAGE_TAG}").tag("${ECR_REPO}:${DOCKER_IMAGE_TAG}")
+                    docker.image("c0-app:tag:${DOCKER_IMAGE_TAG}").tag("${ECR_REPO}:${DOCKER_IMAGE_TAG}")
                 }
                 
                 // Push Docker image to ECR
