@@ -6,6 +6,15 @@ pipeline{
         jdk "JDK17"
         // sonar "sonar"
     }
+    environment {
+        // Set AWS credentials with appropriate permissions
+        // AWS_ACCESS_KEY_ID = credentials('aws-access-key-id')
+        // AWS_SECRET_ACCESS_KEY = credentials('aws-secret-access-key')
+        AWS_ACCOUNT_ID = '590183952641'
+        AWS_REGION = 'us-east-1'
+        ECR_REPO = 'zoowj-repo'
+        DOCKER_IMAGE_TAG = 'latest'
+    }
     stages{
         stage('get code'){
             steps{
@@ -85,6 +94,40 @@ pipeline{
             )
           }
       }
+      stage('Build Docker Image') {
+            steps {
+                script {
+                    // Define Dockerfile location and image name
+                    def dockerfile = './path/to/Dockerfile'
+                    def imageName = 'your/image-name:tag'
+
+                    // Build Docker image
+                    docker.build(imageName, "-f ${dockerfile} .")
+                }
+            }
+        }
+        stage('Push to ECR') {
+            steps {
+                // Login to ECR
+                script {
+                    withAWS(credentials: 'aws_zhuwj2024001a001', region: AWS_REGION) {
+                        sh "aws ecr get-login-password --region ${AWS_REGION} | docker login --username AWS --password-stdin ${AWS_ACCOUNT_ID}.dkr.ecr.${AWS_REGION}.amazonaws.com"
+                    }
+                }
+                
+                // Tag Docker image
+                script {
+                    docker.image("your/image-name:${DOCKER_IMAGE_TAG}").tag("${ECR_REPO}:${DOCKER_IMAGE_TAG}")
+                }
+                
+                // Push Docker image to ECR
+                script {
+                    docker.withRegistry("https://${AWS_ACCOUNT_ID}.dkr.ecr.${AWS_REGION}.amazonaws.com", 'ecr:us-east-1') {
+                        docker.image("${ECR_REPO}:${DOCKER_IMAGE_TAG}").push()
+                    }
+                }
+            }
+        }
     }
     post {
         success {
