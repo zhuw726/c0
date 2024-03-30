@@ -98,8 +98,8 @@ pipeline{
             steps {
                 script {
                     // Define Dockerfile location and image name
-                    def dockerfile = './path/to/Dockerfile'
-                    def imageName = 'your/image-name:tag'
+                    def dockerfile = '.Dockerfile'
+                    def imageName = 'c0-app:tag'
 
                     // Build Docker image
                     docker.build(imageName, "-f ${dockerfile} .")
