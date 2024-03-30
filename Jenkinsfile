@@ -76,7 +76,7 @@ pipeline{
             repository: 'c01-hosted',
             credentialsId: 'nexus',
             artifacts: [
-                [artifactId: c0,
+                [artifactId: 'c0',
                  classifier: '',
                  file: 'target/rest-service-complete-0.0.1-SNAPSHOT.jar',
                  type: 'jar']
