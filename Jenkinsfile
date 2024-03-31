@@ -1,9 +1,14 @@
 pipeline{
     agent {
         kubernetes {
+            // Define the label for the Kubernetes agent
             label 'my-kubernetes-agent'
+
+            // Define the Docker image to use for the Kubernetes agent pod
             defaultContainer 'jnlp'
-            yaml """ 
+
+            // Define pod templates for the Kubernetes agent
+            yaml """
             apiVersion: v1
             kind: Pod
             metadata:
@@ -11,7 +16,7 @@ pipeline{
                 jenkins: my-kubernetes-agent
             spec:
               containers:
-             - name: jnlp
+              - name: jnlp
                 image: jenkins/inbound-agent:4.6-1
                 args: ["\$(JENKINS_SECRET)", "\$(JENKINS_NAME)"]
                 tty: true
@@ -21,6 +26,9 @@ pipeline{
                   - cat
                 tty: true
             """
+
+            // Define additional pod templates if needed
+            // You can specify multiple pod templates for different types of agents
         }
     }
     tools {
