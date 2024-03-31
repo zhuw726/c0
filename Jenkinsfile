@@ -80,7 +80,7 @@ pipeline{
             nexusArtifactUploader(
             nexusVersion: 'nexus3',
             protocol: 'http',
-            nexusUrl: 'nexus.zoowj.click:8081',
+            nexusUrl: 'nexus2.zoowj.click:8081',
             groupId: 'QA',
             version: "${env.BUILD_ID}-${env.BUILD_TIMESTAMP}",
             repository: 'c01-hosted',
