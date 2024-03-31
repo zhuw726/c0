@@ -113,7 +113,6 @@ pipeline{
             )
           }
       }
-      stages {
         stage('Build') {
             steps {
                 container('docker') {
@@ -124,7 +123,6 @@ pipeline{
             }
         }
         // Add more stages as needed
-    }
     //   stage('Build Docker Image') {
     //         steps {
     //             script {
