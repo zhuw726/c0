@@ -1,22 +1,28 @@
 pipeline{
     agent {
         kubernetes {
-            label 'docker'
-            defaultContainer 'docker'
-            yaml """
-            apiVersion: v1
-            kind: Pod
-            metadata:
-              labels:
-                jenkins: docker-agent
-            spec:
-              containers:
-              - name: docker
-                image: docker:19.03.12
-                command:
-                - cat
-                tty: true
-            """
+            yaml '''
+        apiVersion: v1
+        kind: Pod
+        spec:
+          volumes:
+            - name: build-cache
+              persistentVolumeClaim: 
+                claimName: build-cache
+          serviceAccountName: jenkins-agents
+          containers:
+         - name: docker
+            image: myreg/docker:1
+            volumeMounts:
+            - name: build-cache
+              mountPath: /var/lib/docker
+              subPath: docker
+            command:
+            - cat
+            tty: true
+            securityContext:
+              privileged: true
+       '''
         }
     }
     tools {
@@ -113,51 +119,41 @@ pipeline{
             )
           }
       }
-        // stage('Build') {
-        //     steps {
-        //         container('docker') {
-        //             sh 'docker --version'
-        //             sh 'docker build -t my-image .'
-        //             // Add more Docker-related build steps here
-        //         }
-        //     }
-        // }
-        // Add more stages as needed
-    //   stage('Build Docker Image') {
-    //         steps {
-    //             script {
-    //                 // Define Dockerfile location and image name
-    //                 def dockerfile = 'Dockerfile'
-    //                 def imageName = 'c0-app:tag'
+      stage('Build Docker Image') {
+            steps {
+                script {
+                    // Define Dockerfile location and image name
+                    def dockerfile = 'Dockerfile'
+                    def imageName = 'c0-app:tag'
 
-    //                 // Build Docker image
-    //                 docker.build(imageName, "-f ${dockerfile} .")
-    //             }
-    //         }
-    //     }
-    //     stage('Push to ECR') {
-    //         steps {
-    //             // Login to ECR
-    //             script {
-    //                 withAWS(credentials: 'aws_zhuwj2024001a001', region: AWS_REGION) {
-    //                     sh "aws ecr get-login-password --region ${AWS_REGION} | docker login --username AWS --password-stdin ${AWS_ACCOUNT_ID}.dkr.ecr.${AWS_REGION}.amazonaws.com"
-    //                 }
-    //             }
+                    // Build Docker image
+                    docker.build(imageName, "-f ${dockerfile} .")
+                }
+            }
+        }
+        stage('Push to ECR') {
+            steps {
+                // Login to ECR
+                script {
+                    withAWS(credentials: 'aws_zhuwj2024001a001', region: AWS_REGION) {
+                        sh "aws ecr get-login-password --region ${AWS_REGION} | docker login --username AWS --password-stdin ${AWS_ACCOUNT_ID}.dkr.ecr.${AWS_REGION}.amazonaws.com"
+                    }
+                }
                 
-    //             // Tag Docker image
-    //             script {
-    //                 docker.image("c0-app:tag:${DOCKER_IMAGE_TAG}").tag("${ECR_REPO}:${DOCKER_IMAGE_TAG}")
-    //             }
+                // Tag Docker image
+                script {
+                    docker.image("c0-app:tag:${DOCKER_IMAGE_TAG}").tag("${ECR_REPO}:${DOCKER_IMAGE_TAG}")
+                }
                 
-    //             // Push Docker image to ECR
-    //             script {
-    //                 docker.withRegistry("https://${AWS_ACCOUNT_ID}.dkr.ecr.${AWS_REGION}.amazonaws.com", 'ecr:us-east-1') {
-    //                     docker.image("${ECR_REPO}:${DOCKER_IMAGE_TAG}").push()
-    //                 }
-    //             }
-    //         }
-    //     }
-    // }
+                // Push Docker image to ECR
+                script {
+                    docker.withRegistry("https://${AWS_ACCOUNT_ID}.dkr.ecr.${AWS_REGION}.amazonaws.com", 'ecr:us-east-1') {
+                        docker.image("${ECR_REPO}:${DOCKER_IMAGE_TAG}").push()
+                    }
+                }
+            }
+        }
+    }
     post {
         success {
             script {
