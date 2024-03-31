@@ -1,28 +1,26 @@
 pipeline{
     agent {
         kubernetes {
-            yaml '''
-        apiVersion: v1
-        kind: Pod
-        spec:
-          volumes:
-            - name: build-cache
-              persistentVolumeClaim: 
-                claimName: jenkins-pv-claim-helm-docker
-          serviceAccountName: jenkins-agents
-          containers:
-         - name: docker
-            image: myreg/docker:1
-            volumeMounts:
-            - name: build-cache
-              mountPath: /var/lib/docker
-              subPath: docker
-            command:
-            - cat
-            tty: true
-            securityContext:
-              privileged: true
-       '''
+            label 'my-kubernetes-agent'
+            defaultContainer 'jnlp'
+            yaml """ 
+            apiVersion: v1
+            kind: Pod
+            metadata:
+              labels:
+                jenkins: my-kubernetes-agent
+            spec:
+              containers:
+             - name: jnlp
+                image: jenkins/inbound-agent:4.6-1
+                args: ["\$(JENKINS_SECRET)", "\$(JENKINS_NAME)"]
+                tty: true
+              - name: docker
+                image: docker:19.03.12
+                command:
+                  - cat
+                tty: true
+            """
         }
     }
     tools {
