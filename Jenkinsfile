@@ -37,8 +37,22 @@ pipeline{
         jdk "JDK17"
         // sonar "sonar"
     }
+    environment {
+        // Set AWS credentials with appropriate permissions
+        // AWS_ACCESS_KEY_ID = credentials('aws-access-key-id')
+        // AWS_SECRET_ACCESS_KEY = credentials('aws-secret-access-key')
+        AWS_ACCOUNT_ID = '590183952641'
+        AWS_REGION = 'us-east-1'
+        ECR_REPO = 'zoowj-repo'
+        DOCKER_IMAGE_TAG = 'latest'
+    }
     stages{
-      stage('Build Docker Image') {
+        stage('get code'){
+            steps{
+                git branch: 'main', url: 'https://github.com/zhuw726/c0.git'
+            }
+        }
+        stage('Build Docker Image') {
             steps {
                 script {
                     container('docker') {
@@ -55,6 +69,7 @@ pipeline{
                 }
             }
         }
+    }
     post {
         success {
             script {
