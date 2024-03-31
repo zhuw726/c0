@@ -8,7 +8,7 @@ pipeline{
           volumes:
             - name: build-cache
               persistentVolumeClaim: 
-                claimName: build-cache
+                claimName: jenkins-pv-claim-helm-docker
           serviceAccountName: jenkins-agents
           containers:
          - name: docker
