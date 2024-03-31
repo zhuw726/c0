@@ -129,6 +129,8 @@ pipeline{
             steps {
                 script {
                     container('docker') {
+                        sh 'dockerd & > /dev/null'
+                        sleep(time: 20, unit: "SECONDS")
                         sh 'docker --version'
                         // Define Dockerfile location and image name
                         def dockerfile = 'Dockerfile'
