@@ -1,37 +1,45 @@
 pipeline{
+    // agent {
+        // kubernetes {
+        //     // Define the label for the Kubernetes agent
+        //     label 'my-kubernetes-agent'
+
+        //     // Define the Docker image to use for the Kubernetes agent pod
+        //     defaultContainer 'jnlp'
+
+        //     // Define pod templates for the Kubernetes agent
+        //     yaml """
+        //     apiVersion: v1
+        //     kind: Pod
+        //     metadata:
+        //       labels:
+        //         jenkins: my-kubernetes-agent
+        //     spec:
+        //       containers:
+        //       - name: jnlp
+        //         image: jenkins/inbound-agent:alpine-jdk17
+        //         args: ["\$(JENKINS_SECRET)", "\$(JENKINS_NAME)"]
+        //         tty: true
+        //       - name: docker
+        //         image: docker:19.03.12
+        //         command:
+        //           - cat
+        //         tty: true
+        //         securityContext:
+        //           privileged: true
+        //     """
+
+        //     // Define additional pod templates if needed
+        //     // You can specify multiple pod templates for different types of agents
+        // }
+    // }
     agent {
-        kubernetes {
-            // Define the label for the Kubernetes agent
-            label 'my-kubernetes-agent'
-
-            // Define the Docker image to use for the Kubernetes agent pod
-            defaultContainer 'jnlp'
-
-            // Define pod templates for the Kubernetes agent
-            yaml """
-            apiVersion: v1
-            kind: Pod
-            metadata:
-              labels:
-                jenkins: my-kubernetes-agent
-            spec:
-              containers:
-              - name: jnlp
-                image: jenkins/inbound-agent:alpine-jdk17
-                args: ["\$(JENKINS_SECRET)", "\$(JENKINS_NAME)"]
-                tty: true
-              - name: docker
-                image: docker:19.03.12
-                command:
-                  - cat
-                tty: true
-                securityContext:
-                  privileged: true
-            """
-
-            // Define additional pod templates if needed
-            // You can specify multiple pod templates for different types of agents
-        }
+      kubernetes {
+        label 'promo-app'  // all your pods will be named with this prefix, followed by a unique id
+        idleMinutes 5  // how long the pod will live after no jobs have run on it
+        yamlFile 'build-pod.yaml'  // path to the pod definition relative to the root of our project 
+        defaultContainer 'maven'  // define a default container if more than a few stages use it, will default to jnlp container
+      }
     }
     tools {
         // Install the Maven version configured as "M3" and add it to the path.
@@ -57,17 +65,11 @@ pipeline{
         stage('Build Docker Image') {
             steps {
                 script {
-                    container('docker') {
-                        sh 'dockerd & > /dev/null'
-                        sleep(time: 20, unit: "SECONDS")
-                        sh 'docker --version'
-                        // Define Dockerfile location and image name
-                        def dockerfile = 'Dockerfile'
-                        def imageName = 'c0-app:tag'
-    
-                        // Build Docker image
-                        docker.build(imageName, "-f ${dockerfile} .")
-                    }
+                  container('docker') {  
+                   // sh "docker build -t vividlukeloresch/promo-app:dev ."  // when we run docker in this step, we're running it via a shell on the docker build-pod container, 
+                   // sh "docker push vividlukeloresch/promo-app:dev"        // which is just connecting to the host docker deaemon
+                    sh "docker ps" 
+                  }
                 }
             }
         }
