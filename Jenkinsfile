@@ -128,12 +128,14 @@ pipeline{
       stage('Build Docker Image') {
             steps {
                 script {
+                    container('docker') {
                     // Define Dockerfile location and image name
                     def dockerfile = 'Dockerfile'
                     def imageName = 'c0-app:tag'
 
                     // Build Docker image
                     docker.build(imageName, "-f ${dockerfile} .")
+                    }
                 }
             }
         }
