@@ -113,15 +113,15 @@ pipeline{
             )
           }
       }
-        stage('Build') {
-            steps {
-                container('docker') {
-                    sh 'docker --version'
-                    sh 'docker build -t my-image .'
-                    // Add more Docker-related build steps here
-                }
-            }
-        }
+        // stage('Build') {
+        //     steps {
+        //         container('docker') {
+        //             sh 'docker --version'
+        //             sh 'docker build -t my-image .'
+        //             // Add more Docker-related build steps here
+        //         }
+        //     }
+        // }
         // Add more stages as needed
     //   stage('Build Docker Image') {
     //         steps {
