@@ -17,7 +17,7 @@ pipeline{
             spec:
               containers:
               - name: jnlp
-                image: jenkins/inbound-agent:4.13-1
+                image: jenkins/inbound-agent:alpine-jdk17
                 args: ["\$(JENKINS_SECRET)", "\$(JENKINS_NAME)"]
                 tty: true
               - name: docker
