@@ -30,7 +30,7 @@ pipeline{
         }
         stage('build'){
             steps{
-                sh "mvn install -DskipTests"
+                sh "mvn install -DskipTests -X"
             }
             post {
                 success {
