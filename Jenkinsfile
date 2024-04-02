@@ -117,11 +117,13 @@ pipeline{
         stage('Push to ECR') {
             steps {
                 script {
+                  container('docker') {  
                     docker.withRegistry("https://${AWS_ACCOUNT_ID}.dkr.ecr.${AWS_REGION}.amazonaws.com", ecr_credential) {
                         // Tag the Docker image for ECR
-                        docker.image("c0-app:tag").push("${ECR_REPO}:${BUILD_NUMBER}")
-                        // dockerImage.push("${ECR_REPO}:${BUILD_NUMBER}")
+                        //docker.image("c0-app:tag").push("${ECR_REPO}:${BUILD_NUMBER}")
+                        dockerImage.push("${ECR_REPO}:${BUILD_NUMBER}")
                     }
+                  }
                 }
             }
             // steps {
