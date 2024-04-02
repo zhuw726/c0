@@ -115,25 +115,33 @@ pipeline{
         }
         stage('Push to ECR') {
             steps {
-                // Login to ECR
                 script {
-                    withAWS(credentials: 'aws_zhuwj2024001a001', region: AWS_REGION) {
-                        sh "aws ecr get-login-password --region ${AWS_REGION} | docker login --username AWS --password-stdin ${AWS_ACCOUNT_ID}.dkr.ecr.${AWS_REGION}.amazonaws.com"
-                    }
-                }
-                
-                // Tag Docker image
-                script {
-                    docker.image("c0-app:tag:${DOCKER_IMAGE_TAG}").tag("${ECR_REPO}:${DOCKER_IMAGE_TAG}")
-                }
-                
-                // Push Docker image to ECR
-                script {
-                    docker.withRegistry("https://${AWS_ACCOUNT_ID}.dkr.ecr.${AWS_REGION}.amazonaws.com", 'ecr:us-east-1') {
-                        docker.image("${ECR_REPO}:${DOCKER_IMAGE_TAG}").push()
+                    docker.withRegistry("https://${AWS_ACCOUNT_ID}.dkr.ecr.${AWS_REGION}.amazonaws.com", 'aws-ecr') {
+                        // Tag the Docker image for ECR
+                        docker.image("your-docker-image-name").push("${ECR_REPO}:${BUILD_NUMBER}")
                     }
                 }
             }
+            // steps {
+            //     // Login to ECR
+            //     script {
+            //         withAWS(credentials: 'aws_zhuwj2024001a001', region: AWS_REGION) {
+            //             sh "aws ecr get-login-password --region ${AWS_REGION} | docker login --username AWS --password-stdin ${AWS_ACCOUNT_ID}.dkr.ecr.${AWS_REGION}.amazonaws.com"
+            //         }
+            //     }
+                
+            //     // Tag Docker image
+            //     script {
+            //         docker.image("c0-app:tag:${DOCKER_IMAGE_TAG}").tag("${ECR_REPO}:${DOCKER_IMAGE_TAG}")
+            //     }
+                
+            //     // Push Docker image to ECR
+            //     script {
+            //         docker.withRegistry("https://${AWS_ACCOUNT_ID}.dkr.ecr.${AWS_REGION}.amazonaws.com", 'ecr:us-east-1') {
+            //             docker.image("${ECR_REPO}:${DOCKER_IMAGE_TAG}").push()
+            //         }
+            //     }
+            // }
         }
     }
     post {
