@@ -21,7 +21,7 @@ pipeline{
         AWS_REGION = 'us-east-1'
         ECR_REPO = 'zoowj-repo'
         DOCKER_IMAGE_TAG = 'latest'
-        ecr_credential= 'ecr'
+        ecr_credential= 'ecr:us-east-1:ecr'
     }
     stages{
         stage('get code'){
