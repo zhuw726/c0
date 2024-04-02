@@ -122,7 +122,7 @@ pipeline{
                         // Tag the Docker image for ECR
                         // docker.image("c0-app:tag").push("${ECR_REPO}:${BUILD_NUMBER}")
                         // dockerImage.push("${ECR_REPO}:${BUILD_NUMBER}")
-                        dockerImage.push("ss:${BUILD_NUMBER}")
+                        dockerImage.push("ss")
                     }
                   }
                 }
