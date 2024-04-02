@@ -21,6 +21,7 @@ pipeline{
         AWS_REGION = 'us-east-1'
         ECR_REPO = 'zoowj-repo'
         DOCKER_IMAGE_TAG = 'latest'
+        ecr_credential= 'ecr'
     }
     stages{
         stage('get code'){
@@ -108,7 +109,7 @@ pipeline{
                     def dockerfile = 'Dockerfile'
                     def imageName = 'c0-app:tag'
                     // Build Docker image
-                    docker.build(imageName, "-f ${dockerfile} .")
+                    dockerImage = docker.build(imageName, "-f ${dockerfile} .")
                   }
                 }
             }
@@ -116,10 +117,10 @@ pipeline{
         stage('Push to ECR') {
             steps {
                 script {
-                    docker.withRegistry("https://${AWS_ACCOUNT_ID}.dkr.ecr.${AWS_REGION}.amazonaws.com", "ecr") {
+                    docker.withRegistry("https://${AWS_ACCOUNT_ID}.dkr.ecr.${AWS_REGION}.amazonaws.com", ecr_credential) {
                         // Tag the Docker image for ECR
                         //docker.image("c0-app:tag").push("${ECR_REPO}:${BUILD_NUMBER}")
-                        docker.push("${ECR_REPO}:${BUILD_NUMBER}")
+                        dockerImage.push("${ECR_REPO}:${BUILD_NUMBER}")
                     }
                 }
             }
