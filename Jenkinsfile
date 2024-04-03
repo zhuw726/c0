@@ -121,8 +121,8 @@ pipeline{
                     docker.withRegistry("https://${AWS_ACCOUNT_ID}.dkr.ecr.${AWS_REGION}.amazonaws.com", ecr_credential) {
                         // Tag the Docker image for ECR
                         // imageRepositoryName = "${AWS_ACCOUNT_ID}.dkr.ecr.${AWS_REGION}.amazonaws.com/zoowj-repo"
-                        docker.image("zoowj-repo").push("utils:${BUILD_NUMBER}")
-                        docker.image("zoowj-repo").push("utils:latest")
+                        docker.image("zoowj-repo").push("utils-${BUILD_NUMBER}")
+                        docker.image("zoowj-repo").push("utils-latest")
                         // docker.image("zoowj-repo").push("${imageRepositoryName}:${BUILD_NUMBER}")
                         // docker.image("zoowj-repo").push("${imageRepositoryName}:latest")
                         // docker.image("zoowj-repo").push("1")
